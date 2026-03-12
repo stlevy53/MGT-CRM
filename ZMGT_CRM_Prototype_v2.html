@@ -1,0 +1,1821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZMGT Developer Portal — Support CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sidebar-bg: #111111;
+    --primary: #2563EB;
+    --primary-light: #EFF6FF;
+    --content-bg: #F3F4F6;
+    --card: #FFFFFF;
+    --border: #E5E7EB;
+    --text-primary: #111827;
+    --text-secondary: #6B7280;
+    --text-tertiary: #9CA3AF;
+    --red: #E3001B;
+    --red-light: #FEE2E2;
+    --amber: #D97706;
+    --amber-light: #FEF3C7;
+    --green: #16A34A;
+    --green-light: #DCFCE7;
+    --purple: #7C3AED;
+    --purple-light: #EDE9FE;
+    --gray: #6B7280;
+    --nav-w: 220px;
+    --top-h: 52px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text-primary); background: var(--content-bg); display: flex; flex-direction: column; min-height: 100vh; }
+  
+  /* TOP NAV */
+  .topnav {
+    position: fixed; top: 0; left: 0; right: 0; height: var(--top-h);
+    background: #fff; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; padding: 0 20px; z-index: 100;
+    justify-content: space-between;
+  }
+  .topnav-left { display: flex; align-items: center; gap: 16px; }
+  .logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+  .logo-mark { background: var(--red); color: #fff; font-weight: 900; font-style: italic; font-size: 13px; padding: 4px 8px; border-radius: 2px; letter-spacing: -0.5px; }
+  .logo-text { font-weight: 700; font-style: italic; font-size: 15px; color: var(--text-primary); letter-spacing: -0.5px; }
+  .game-selector {
+    display: flex; align-items: center; gap: 6px; padding: 5px 10px;
+    border: 1px solid var(--border); border-radius: 6px; cursor: pointer;
+    font-size: 12px; color: var(--text-secondary); background: #fff;
+  }
+  .game-selector:hover { border-color: var(--primary); }
+  .topnav-right { display: flex; align-items: center; gap: 12px; }
+  .nav-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; cursor: pointer; color: var(--text-secondary); }
+  .nav-icon:hover { background: var(--content-bg); }
+  .avatar { width: 32px; height: 32px; background: var(--primary); border-radius: 50%; color: #fff; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+  /* ROLE SWITCHER */
+  .role-switcher {
+    position: fixed; top: 60px; right: 16px; background: var(--sidebar-bg); color: #fff;
+    border-radius: 10px; padding: 12px; z-index: 200; font-size: 11px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  }
+  .role-switcher label { color: var(--text-tertiary); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 8px; }
+  .role-btn { display: block; width: 100%; text-align: left; padding: 6px 10px; border-radius: 6px; border: none; background: transparent; color: #fff; font-size: 11px; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-bottom: 2px; }
+  .role-btn:hover, .role-btn.active { background: var(--primary); }
+
+  /* SIDEBAR */
+  .sidebar {
+    position: fixed; top: var(--top-h); left: 0; bottom: 0; width: var(--nav-w);
+    background: var(--sidebar-bg); z-index: 90; overflow-y: auto; padding: 8px 0;
+  }
+  .nav-section-label { color: #4B5563; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; padding: 12px 16px 4px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; padding: 8px 16px; cursor: pointer;
+    color: #9CA3AF; font-size: 13px; position: relative; transition: color 0.15s;
+    border: none; background: transparent; width: 100%; text-align: left; font-family: 'DM Sans', sans-serif;
+  }
+  .nav-item:hover { color: #fff; }
+  .nav-item.active { color: #fff; background: rgba(37,99,235,0.15); }
+  .nav-item.active::before { content: ''; position: absolute; left: 0; top: 4px; bottom: 4px; width: 3px; background: var(--primary); border-radius: 0 2px 2px 0; }
+  .nav-icon-s { width: 16px; height: 16px; flex-shrink: 0; }
+
+  /* MAIN CONTENT */
+  .main { margin-left: var(--nav-w); margin-top: var(--top-h); padding: 24px; min-height: calc(100vh - var(--top-h)); }
+
+  /* ALERT BANNER */
+  .alert-banner { background: var(--red-light); border-bottom: 1px solid #FECACA; padding: 10px 24px; margin-left: var(--nav-w); margin-top: var(--top-h); position: sticky; top: var(--top-h); z-index: 80; display: flex; align-items: center; justify-content: space-between; }
+  .alert-banner.hidden { display: none; }
+  .alert-banner-text { color: var(--red); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+  .alert-banner-close { color: var(--red); cursor: pointer; font-size: 16px; background: none; border: none; padding: 0; }
+
+  /* CARDS */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; }
+  .card-title { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 16px; }
+  .page-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .page-sub { color: var(--text-secondary); font-size: 13px; margin-bottom: 24px; }
+
+  /* BADGES */
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; white-space: nowrap; }
+  .badge-open { background: #EFF6FF; color: var(--primary); }
+  .badge-inprogress { background: var(--amber-light); color: var(--amber); }
+  .badge-waiting { background: var(--purple-light); color: var(--purple); }
+  .badge-resolved { background: var(--green-light); color: var(--green); }
+  .badge-autoclosed { background: #F3F4F6; color: var(--gray); }
+  .badge-critical { background: var(--red-light); color: var(--red); }
+  .badge-standard { background: #F3F4F6; color: var(--gray); border: 1px solid var(--border); }
+  .badge-active { background: var(--green-light); color: var(--green); }
+  .badge-disabled { background: #F3F4F6; color: var(--gray); }
+  .badge-proto { background: #FEF3C7; color: #92400E; }
+  .badge-preprod { background: var(--purple-light); color: var(--purple); }
+  .badge-prod { background: var(--green-light); color: var(--green); }
+
+  /* SLA BAR */
+  .sla-bar-wrap { display: flex; flex-direction: column; gap: 3px; min-width: 100px; }
+  .sla-bar-track { height: 4px; border-radius: 2px; background: var(--border); overflow: hidden; }
+  .sla-bar-fill { height: 100%; border-radius: 2px; transition: width 0.3s; }
+  .sla-fill-green { background: var(--green); }
+  .sla-fill-amber { background: var(--amber); }
+  .sla-fill-red { background: var(--red); }
+  .sla-fill-gray { background: var(--text-tertiary); }
+  .sla-label { font-size: 11px; color: var(--text-secondary); }
+  .sla-label.breached { color: var(--red); font-weight: 500; }
+  .sla-label.atrisk { color: var(--amber); font-weight: 500; }
+
+  /* TABLES */
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table th { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); background: #FAFAFA; }
+  .data-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr.clickable { cursor: pointer; }
+  .data-table tr.clickable:hover td { background: #F9FAFB; }
+  .data-table tr.critical-row td:first-child { border-left: 3px solid var(--red); }
+  .data-table tr.breach-row td { background: #FFF5F5; }
+  .mono { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text-secondary); }
+  .link { color: var(--primary); cursor: pointer; text-decoration: none; }
+  .link:hover { text-decoration: underline; }
+
+  /* FILTER BAR */
+  .filter-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .filter-select { padding: 7px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 12px; background: #fff; color: var(--text-primary); font-family: 'DM Sans', sans-serif; cursor: pointer; }
+  .filter-select:focus { outline: none; border-color: var(--primary); }
+  .search-input { padding: 7px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; background: #fff; color: var(--text-primary); font-family: 'DM Sans', sans-serif; min-width: 200px; }
+  .search-input:focus { outline: none; border-color: var(--primary); }
+  .filter-chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; background: var(--primary-light); color: var(--primary); border-radius: 20px; font-size: 11px; }
+  .filter-chip button { border: none; background: none; color: var(--primary); cursor: pointer; padding: 0; font-size: 13px; line-height: 1; }
+
+  /* BUTTONS */
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; font-family: 'DM Sans', sans-serif; transition: opacity 0.15s; white-space: nowrap; }
+  .btn:hover { opacity: 0.88; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-secondary { background: #fff; color: var(--text-primary); border: 1px solid var(--border); }
+  .btn-ghost { background: transparent; color: var(--text-secondary); border: 1px solid var(--border); }
+  .btn-danger { background: var(--red); color: #fff; }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+  .btn-icon { padding: 6px; border-radius: 6px; background: transparent; border: none; cursor: pointer; color: var(--text-secondary); font-size: 14px; }
+  .btn-icon:hover { background: var(--content-bg); }
+
+  /* FORMS */
+  .form-group { margin-bottom: 16px; }
+  .form-label { display: block; font-size: 12px; font-weight: 500; color: var(--text-primary); margin-bottom: 4px; }
+  .form-label .req { color: var(--red); margin-left: 2px; }
+  .form-input, .form-select, .form-textarea { width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text-primary); background: #fff; }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.08); }
+  .form-textarea { resize: vertical; min-height: 90px; }
+  .form-error { color: #B91C1C; font-size: 11px; margin-top: 3px; }
+  .form-hint { color: var(--text-secondary); font-size: 11px; margin-top: 3px; }
+  .char-counter { font-size: 11px; color: var(--text-tertiary); text-align: right; margin-top: 2px; }
+  .radio-group { display: flex; flex-direction: column; gap: 8px; }
+  .radio-option { display: flex; align-items: flex-start; gap: 8px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; }
+  .radio-option:hover { border-color: var(--primary); background: var(--primary-light); }
+  .radio-option.selected { border-color: var(--primary); background: var(--primary-light); }
+  .radio-option input { margin-top: 2px; }
+  .callout { padding: 10px 14px; border-radius: 6px; font-size: 12px; margin-top: 8px; }
+  .callout-amber { background: var(--amber-light); color: #92400E; border: 1px solid #FDE68A; }
+  .callout-blue { background: var(--primary-light); color: #1D4ED8; border: 1px solid #BFDBFE; }
+  .callout-green { background: var(--green-light); color: #14532D; border: 1px solid #BBF7D0; }
+  .route-preview { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: var(--primary-light); color: var(--primary); border-radius: 20px; font-size: 12px; margin-top: 6px; }
+  .submitter-block { background: #F9FAFB; border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; font-size: 12px; }
+  .submitter-block strong { font-weight: 600; color: var(--text-primary); }
+  .drop-zone { border: 2px dashed var(--border); border-radius: 8px; padding: 24px; text-align: center; color: var(--text-secondary); font-size: 12px; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+  .drop-zone:hover { border-color: var(--primary); background: var(--primary-light); }
+  .form-sticky { position: sticky; bottom: 0; background: #fff; border-top: 1px solid var(--border); padding: 16px 24px; display: flex; gap: 8px; justify-content: flex-end; margin: 0 -24px -24px; border-radius: 0 0 10px 10px; }
+
+  /* DRAWER */
+  .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.25); z-index: 150; display: none; }
+  .drawer-overlay.open { display: block; }
+  .drawer { position: fixed; top: 0; right: 0; bottom: 0; width: 480px; background: #fff; z-index: 160; overflow-y: auto; box-shadow: -8px 0 32px rgba(0,0,0,0.12); transform: translateX(100%); transition: transform 0.25s ease; }
+  .drawer.open { transform: translateX(0); }
+  .drawer-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: #fff; z-index: 1; }
+  .drawer-header-left { display: flex; align-items: center; gap: 8px; }
+  .drawer-body { padding: 20px; }
+  .drawer-section { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+  .drawer-section:last-child { border-bottom: none; }
+  .drawer-section-title { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); margin-bottom: 10px; }
+
+  /* TIMELINE */
+  .timeline { display: flex; flex-direction: column; gap: 0; }
+  .timeline-item { display: flex; gap: 12px; padding-bottom: 16px; position: relative; }
+  .timeline-item::before { content: ''; position: absolute; left: 7px; top: 18px; bottom: -4px; width: 1px; background: var(--border); }
+  .timeline-item:last-child::before { display: none; }
+  .timeline-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--border); flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; }
+  .timeline-dot.blue { background: var(--primary); }
+  .timeline-dot.green { background: var(--green); }
+  .timeline-dot.amber { background: var(--amber); }
+  .timeline-dot.red { background: var(--red); }
+  .timeline-content { flex: 1; }
+  .timeline-event { font-size: 13px; font-weight: 500; }
+  .timeline-meta { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+
+  /* MODAL */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; display: none; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: #fff; border-radius: 12px; padding: 24px; width: 480px; max-width: 90vw; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+  .modal-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+  .modal-sub { color: var(--text-secondary); font-size: 13px; margin-bottom: 20px; }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+
+  /* TOAST */
+  .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 300; display: flex; flex-direction: column; gap: 8px; }
+  .toast { background: #fff; border-radius: 8px; padding: 12px 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); border-left: 4px solid; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-width: 280px; animation: slideIn 0.25s ease; font-size: 13px; }
+  .toast-green { border-left-color: var(--green); }
+  .toast-blue { border-left-color: var(--primary); }
+  .toast-amber { border-left-color: var(--amber); }
+  .toast-red { border-left-color: var(--red); }
+  .toast-close { background: none; border: none; cursor: pointer; color: var(--text-tertiary); font-size: 16px; padding: 0; }
+  @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+  /* SCREEN SECTIONS */
+  .screen { display: none; }
+  .screen.active { display: block; }
+  .grid-2 { display: grid; grid-template-columns: 65fr 35fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .section-gap { margin-bottom: 16px; }
+
+  /* KPI CARDS */
+  .kpi-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; }
+  .kpi-label { font-size: 12px; color: var(--text-secondary); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .kpi-value { font-size: 28px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+  .kpi-delta { font-size: 12px; display: flex; align-items: center; gap: 4px; }
+  .kpi-delta.pos { color: var(--green); }
+  .kpi-delta.neg { color: var(--red); }
+  .kpi-delta.warn { color: var(--amber); }
+
+  /* DONUT */
+  .donut-wrap { display: flex; align-items: center; gap: 24px; }
+  .donut-svg { transform: rotate(-90deg); }
+  .donut-center-text { text-anchor: middle; dominant-baseline: central; font-family: 'DM Sans', sans-serif; }
+  .donut-legend { display: flex; flex-direction: column; gap: 8px; }
+  .donut-legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+  .donut-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  /* BAR CHART */
+  .bar-chart { display: flex; flex-direction: column; gap: 10px; }
+  .bar-row { display: flex; align-items: center; gap: 10px; }
+  .bar-label { font-size: 12px; color: var(--text-secondary); width: 120px; flex-shrink: 0; text-align: right; }
+  .bar-track { flex: 1; height: 20px; background: var(--content-bg); border-radius: 4px; overflow: hidden; position: relative; }
+  .bar-fill { height: 100%; border-radius: 4px; display: flex; align-items: center; padding-left: 8px; font-size: 11px; font-weight: 500; color: #fff; transition: width 0.6s ease; }
+  .bar-count { font-size: 12px; color: var(--text-secondary); width: 30px; flex-shrink: 0; }
+
+  /* TEAM PROFILE CARDS */
+  .profile-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .profile-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; cursor: pointer; transition: box-shadow 0.15s, border-color 0.15s; }
+  .profile-card:hover { border-color: var(--primary); box-shadow: 0 2px 12px rgba(37,99,235,0.08); }
+  .profile-card-name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+  .profile-card-studio { font-size: 12px; color: var(--text-secondary); margin-bottom: 10px; }
+  .chip-group { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
+  .chip { display: inline-flex; padding: 2px 7px; background: var(--primary-light); color: var(--primary); border-radius: 20px; font-size: 11px; }
+  .profile-card-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-secondary); border-top: 1px solid var(--border); padding-top: 10px; margin-top: 2px; }
+
+  /* TABS */
+  .tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+  .tab { padding: 8px 16px; font-size: 13px; color: var(--text-secondary); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; font-weight: 500; }
+  .tab:hover { color: var(--text-primary); }
+  .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* CONFIRMATION SCREEN */
+  .confirm-center { max-width: 560px; margin: 40px auto; }
+  .success-icon { width: 56px; height: 56px; background: var(--green-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 24px; }
+
+  /* NOTES */
+  .note-item { padding: 12px; background: #F9FAFB; border-radius: 6px; margin-bottom: 8px; }
+  .note-meta { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
+  .note-text { font-size: 13px; }
+
+  /* MISC */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+  .inline-badge { display: inline-flex; align-items: center; gap: 4px; }
+  .text-right { text-align: right; }
+  .flex-between { display: flex; align-items: center; justify-content: space-between; }
+  .flex-gap { display: flex; align-items: center; gap: 8px; }
+  .mt-16 { margin-top: 16px; }
+  .mb-16 { margin-bottom: 16px; }
+  .text-sm { font-size: 12px; }
+  .text-secondary { color: var(--text-secondary); }
+  .fw-600 { font-weight: 600; }
+  .full-width { grid-column: 1 / -1; }
+
+  /* LOADING SKELETON */
+  .skeleton { background: linear-gradient(90deg, #F3F4F6 25%, #E5E7EB 50%, #F3F4F6 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 4px; }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+  /* ROUTING ANIMATION */
+  .routing-anim { display: flex; align-items: center; gap: 8px; padding: 16px; background: #F9FAFB; border-radius: 8px; font-size: 12px; margin: 12px 0; }
+  .routing-step { display: flex; align-items: center; gap: 6px; }
+  .routing-arrow { color: var(--text-tertiary); }
+  .routing-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); }
+  .routing-dot.pulse { animation: pulse 1.5s ease infinite; }
+  @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.4); opacity: 0.6; } }
+
+  /* QUICK-ASSIGN INLINE */
+  .quick-assign-cell { position: relative; }
+  .quick-assign-cell .assignee-val { cursor: pointer; color: var(--primary); font-size: 12px; }
+  .quick-assign-cell .assignee-val:hover { text-decoration: underline; }
+
+  /* PROGRESS BAR COMPOUND */
+  .sla-compound { display: flex; align-items: center; gap: 8px; }
+  .sla-full { flex: 1; }
+  .sla-actions-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+
+  /* SNAPSHOT PANEL */
+  .snapshot-panel { background: #FAFAFA; border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
+  .snapshot-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; font-size: 12px; }
+  .snapshot-row .label { color: var(--text-secondary); }
+  .snapshot-row .val { font-weight: 500; }
+  .contact-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+  .contact-item:last-child { border-bottom: none; }
+
+  /* AUDIT LOG */
+  .audit-row { font-size: 12px; }
+  .audit-expand { display: none; background: #F9FAFB; padding: 10px 12px; font-size: 11px; color: var(--text-secondary); }
+  .audit-row.expanded + .audit-expand { display: table-row; }
+</style>
+</head>
+<body>
+
+<!-- ROLE SWITCHER -->
+<div class="role-switcher">
+  <label>View as Role</label>
+  <button class="role-btn active" onclick="setRole('game-team')">🎮 Game Team Engineer</button>
+  <button class="role-btn" onclick="setRole('zmgt')">⚙️ ZMGT Engineer</button>
+  <button class="role-btn" onclick="setRole('leadership')">📊 Pod Lead / Director</button>
+  <button class="role-btn" onclick="setRole('admin')">🔧 Admin</button>
+</div>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <div class="topnav-left">
+    <a class="logo" href="#">
+      <span class="logo-mark">Z</span>
+      <span class="logo-text">Console</span>
+    </a>
+    <div class="game-selector" id="gameSelectorWrap">
+      <span>🎮</span>
+      <select style="border:none;background:transparent;font-size:12px;color:var(--text-secondary);font-family:'DM Sans',sans-serif;cursor:pointer;outline:none;">
+        <option>FarmVille 3</option>
+        <option>Words with Friends 2</option>
+        <option>Zynga Poker</option>
+      </select>
+    </div>
+  </div>
+  <div class="topnav-right">
+    <div class="nav-icon">?</div>
+    <div class="nav-icon">⊞</div>
+    <div class="avatar" id="userAvatar">JD</div>
+  </div>
+</nav>
+
+<!-- SLA BREACH BANNER -->
+<div class="alert-banner" id="alertBanner" style="margin-top:52px;">
+  <div class="alert-banner-text">
+    ⚠️ <strong>2 Critical Outage cases have breached SLA.</strong> Immediate action required.
+  </div>
+  <button class="alert-banner-close" onclick="document.getElementById('alertBanner').classList.add('hidden')">✕</button>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <!-- Game Team Engineer nav -->
+  <div id="nav-game-team">
+    <div class="nav-section-label">Platform</div>
+    <button class="nav-item" onclick="navigate('s01')">
+      <svg class="nav-icon-s" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      Create Request
+    </button>
+    <button class="nav-item" onclick="navigate('s02')">
+      <svg class="nav-icon-s" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      My Requests
+    </button>
+  </div>
+
+  <!-- ZMGT Engineer nav -->
+  <div id="nav-zmgt" style="display:none;">
+    <div class="nav-section-label">Platform</div>
+    <button class="nav-item">
+      <svg class="nav-icon-s" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      Onboarding
+    </button>
+    <button class="nav-item">
+      <svg class="nav-icon-s" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
+      Studios
+    </button>
+    <div class="nav-section-label">Support</div>
+    <button class="nav-item active" onclick="navigate('s03')">
+      <svg class="nav-icon-s" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+      Support Requests
+    </button>
+    <button class="nav-item" onclick="navigate('s06')">
+      <svg class="nav-icon-s" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+      Game Team Profiles
+    </button>
+  </div>
+
+  <!-- Leadership nav -->
+  <div id="nav-leadership" style="display:none;">
+    <div class="nav-section-label">Support</div>
+    <button class="nav-item" onclick="navigate('s03')">
+      <svg class="nav-icon-s" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+      Support Requests
+    </button>
+    <button class="nav-item" onclick="navigate('s06')">
+      <svg class="nav-icon-s" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
+      Game Team Profiles
+    </button>
+    <button class="nav-item active" onclick="navigate('s07')">
+      <svg class="nav-icon-s" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      Executive Dashboard
+    </button>
+  </div>
+
+  <!-- Admin nav -->
+  <div id="nav-admin" style="display:none;">
+    <div class="nav-section-label">Support</div>
+    <button class="nav-item" onclick="navigate('s03')">
+      <svg class="nav-icon-s" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+      Support Requests
+    </button>
+    <button class="nav-item" onclick="navigate('s06')">Game Team Profiles</button>
+    <div class="nav-section-label">Admin</div>
+    <button class="nav-item active" onclick="navigate('s08')">
+      <svg class="nav-icon-s" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+      Routing Rules
+    </button>
+    <button class="nav-item" onclick="navigate('s09')">
+      <svg class="nav-icon-s" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      Audit Log
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main" id="main">
+
+  <!-- ============ S-01: INTAKE FORM ============ -->
+  <section class="screen active" id="screen-s01">
+    <div style="max-width:720px;margin:0 auto;">
+      <h1 class="page-title">Create Support Request</h1>
+      <p class="page-sub">Submit a request to the ZMGT Systems Team. You'll receive a confirmation with your case ID and SLA commitment.</p>
+      <div class="card">
+        <div class="form-group">
+          <label class="form-label">Game Team Name <span class="req">*</span></label>
+          <select class="form-select" onchange="updateRouting()">
+            <option>FarmVille 3</option>
+            <option>Words with Friends 2</option>
+            <option>Zynga Poker</option>
+            <option>Merge Dragons!</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Studio <span class="req">*</span></label>
+          <select class="form-select">
+            <option>NaturalMotion</option>
+            <option>Zynga Austin</option>
+            <option>Zynga Baltimore</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Service Category <span class="req">*</span></label>
+          <select class="form-select" id="serviceSelect" onchange="updateRouting()">
+            <option value="">— Select a service —</option>
+            <option value="aws">AWS Provisioning</option>
+            <option value="k8s">Kubernetes</option>
+            <option value="ci">Forge CI/CD</option>
+            <option value="db">Database Services</option>
+            <option value="obs">Observability</option>
+          </select>
+          <div id="routePreview" style="display:none;margin-top:8px;">
+            <span class="route-preview">🔀 Routed to: <strong id="routePodName">—</strong></span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Priority <span class="req">*</span></label>
+          <div class="radio-group">
+            <label class="radio-option" onclick="setPriority(this,'critical')">
+              <input type="radio" name="priority" value="critical"> 
+              <div>
+                <div style="font-weight:500;color:var(--red);">⚡ Critical Outage</div>
+                <div style="font-size:11px;color:var(--text-secondary);">Active production outage affecting live users</div>
+              </div>
+            </label>
+            <label class="radio-option selected" onclick="setPriority(this,'standard')">
+              <input type="radio" name="priority" value="standard" checked>
+              <div>
+                <div style="font-weight:500;">Standard</div>
+                <div style="font-size:11px;color:var(--text-secondary);">Non-urgent questions, integrations, improvements</div>
+              </div>
+            </label>
+          </div>
+          <div id="criticalCallout" style="display:none;" class="callout callout-amber">
+            ⚠️ <strong>Critical Outage SLA:</strong> 2-hour first response, 24-hour resolution. Use only for active production outages. Misuse may result in deprioritization.
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Summary <span class="req">*</span></label>
+          <input type="text" class="form-input" id="summaryInput" maxlength="200" placeholder="Brief description of the issue" oninput="updateCharCount(this,'summaryCount',200)">
+          <div class="char-counter"><span id="summaryCount">0</span>/200</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description <span class="req">*</span></label>
+          <textarea class="form-textarea" rows="5" maxlength="2000" placeholder="Describe the issue, steps to reproduce, and any error messages or logs." oninput="updateCharCount(this,'descCount',2000)"></textarea>
+          <div class="char-counter"><span id="descCount">0</span>/2,000</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Attachments</label>
+          <div class="drop-zone" onclick="showToast('File picker not available in prototype','blue')">
+            📎 Drag & drop files here, or click to browse<br>
+            <span style="font-size:11px;color:var(--text-tertiary);">Accepted: CSV, .md, PNG, JPG, GIF · Max size TBD</span>
+          </div>
+        </div>
+        <div class="submitter-block mt-16">
+          <div style="font-size:11px;color:var(--text-secondary);font-weight:500;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Submitting as:</div>
+          <div><strong>Jordan Ellis</strong> · <span style="color:var(--text-secondary);">j.ellis@zynga.com</span> · <span style="color:var(--text-secondary);">@j_ellis</span></div>
+        </div>
+        <div class="form-sticky">
+          <button class="btn btn-ghost" onclick="navigate('s02')">Cancel</button>
+          <button class="btn btn-primary" onclick="submitRequest()">Submit Request</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ S-01b: CONFIRMATION ============ -->
+  <section class="screen" id="screen-s01b">
+    <div class="confirm-center">
+      <div class="card" style="text-align:center;padding:40px;">
+        <div class="success-icon">✅</div>
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:4px;">Request Submitted</h2>
+        <p style="color:var(--text-secondary);margin-bottom:24px;">Your request has been received and is being routed.</p>
+        <div class="callout callout-blue" style="text-align:left;margin-bottom:16px;">
+          <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;color:var(--primary);">Case Details</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;">
+            <div><span style="color:var(--text-secondary);">Case ID:</span><br><span class="mono" style="font-size:14px;font-weight:600;">CASE-0049</span></div>
+            <div><span style="color:var(--text-secondary);">Jira Ticket:</span><br><a class="link mono" style="font-size:13px;">ZMGT-2855</a></div>
+            <div><span style="color:var(--text-secondary);">Priority:</span><br><span class="badge badge-standard">Standard</span></div>
+            <div><span style="color:var(--text-secondary);">Routed to:</span><br><strong>Cloud Infrastructure Pod</strong></div>
+          </div>
+        </div>
+        <div style="background:#F9FAFB;border-radius:8px;padding:14px;margin-bottom:24px;text-align:left;">
+          <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;color:var(--text-secondary);">SLA Commitment</div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span>First Response</span><span style="font-weight:600;">Within 8 business hours</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;"><span>Resolution Target</span><span style="font-weight:600;">Within 5 business days</span></div>
+        </div>
+        <p style="font-size:12px;color:var(--text-secondary);margin-bottom:24px;">You will receive a Slack notification at <strong>@j_ellis</strong> when an engineer picks up your request.</p>
+        <div style="display:flex;gap:8px;justify-content:center;">
+          <button class="btn btn-primary" onclick="navigate('s02')">View My Requests</button>
+          <button class="btn btn-ghost" onclick="navigate('s01')">Submit Another Request</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ S-02: MY REQUESTS ============ -->
+  <section class="screen" id="screen-s02">
+    <div class="flex-between mb-16">
+      <h1 class="page-title" style="margin:0;">My Support Requests</h1>
+      <button class="btn btn-primary btn-sm" onclick="navigate('s01')">+ New Request</button>
+    </div>
+    <div class="filter-bar">
+      <select class="filter-select"><option>All Status</option><option>Open</option><option>In Progress</option><option>Waiting on Customer</option><option>Resolved</option></select>
+      <select class="filter-select"><option>All Priority</option><option>Critical Outage</option><option>Standard</option></select>
+      <input type="text" class="search-input" placeholder="Search requests…">
+    </div>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Case ID</th>
+            <th>Summary</th>
+            <th>Service</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>SLA</th>
+            <th>Created</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="clickable critical-row" onclick="openDrawer()">
+            <td class="mono">CASE-0043</td>
+            <td style="max-width:200px;">Pod autoscaler failure — FV3 prod</td>
+            <td>Kubernetes</td>
+            <td><span class="badge badge-critical">⚡ Critical</span></td>
+            <td><span class="badge badge-inprogress">In Progress</span></td>
+            <td>
+              <div class="sla-bar-wrap">
+                <div class="sla-bar-track"><div class="sla-bar-fill sla-fill-red" style="width:95%"></div></div>
+                <div class="sla-label breached">🔴 Breached</div>
+              </div>
+            </td>
+            <td class="text-sm text-secondary">Mar 8, 2026</td>
+          </tr>
+          <tr class="clickable" onclick="openDrawer()">
+            <td class="mono">CASE-0045</td>
+            <td>S3 bucket permissions for new env</td>
+            <td>AWS Provisioning</td>
+            <td><span class="badge badge-standard">Standard</span></td>
+            <td><span class="badge badge-inprogress">In Progress</span></td>
+            <td>
+              <div class="sla-bar-wrap">
+                <div class="sla-bar-track"><div class="sla-bar-fill sla-fill-amber" style="width:82%"></div></div>
+                <div class="sla-label atrisk">⚠️ At Risk · 3h left</div>
+              </div>
+            </td>
+            <td class="text-sm text-secondary">Mar 9, 2026</td>
+          </tr>
+          <tr class="clickable" onclick="openDrawer()">
+            <td class="mono">CASE-0047</td>
+            <td>CI pipeline fails on main branch</td>
+            <td>Forge CI/CD</td>
+            <td><span class="badge badge-standard">Standard</span></td>
+            <td><span class="badge badge-waiting">Waiting on Customer</span></td>
+            <td>
+              <div class="sla-bar-wrap">
+                <div class="sla-bar-track"><div class="sla-bar-fill sla-fill-gray" style="width:45%"></div></div>
+                <div class="sla-label">⏸ Paused · Day 2</div>
+              </div>
+            </td>
+            <td class="text-sm text-secondary">Mar 9, 2026</td>
+          </tr>
+          <tr class="clickable" onclick="openDrawer()">
+            <td class="mono">CASE-0038</td>
+            <td>Onboarding checklist — new env setup</td>
+            <td>AWS Provisioning</td>
+            <td><span class="badge badge-standard">Standard</span></td>
+            <td><span class="badge badge-resolved">Resolved</span></td>
+            <td>
+              <div class="sla-bar-wrap">
+                <div class="sla-bar-track"><div class="sla-bar-fill sla-fill-green" style="width:60%"></div></div>
+                <div class="sla-label" style="color:var(--green);">✓ Met · 2d 4h</div>
+              </div>
+            </td>
+            <td class="text-sm text-secondary">Mar 1, 2026</td>
+          </tr>
+          <tr class="clickable" onclick="openDrawer()">
+            <td class="mono">CASE-0029</td>
+            <td>K8s namespace quota exceeded</td>
+            <td>Kubernetes</td>
+            <td><span class="badge badge-standard">Standard</span></td>
+            <td><span class="badge badge-autoclosed">Auto-Closed</span></td>
+            <td>
+              <div class="sla-bar-wrap">
+                <div class="sla-bar-track"><div class="sla-bar-fill sla-fill-gray" style="width:100%"></div></div>
+                <div class="sla-label">Auto-closed · Day 20</div>
+              </div>
+            </td>
+            <td class="text-sm text-secondary">Feb 18, 2026</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ S-03: SUPPORT QUEUE ============ -->
+  <section class="screen" id="screen-s03">
+    <div class="flex-between mb-16">
+      <h1 class="page-title" style="margin:0;">Support Requests</h1>
+      <div class="flex-gap">
+        <button class="btn btn-ghost btn-sm">My Pod</button>
+        <button class="btn btn-secondary btn-sm">All Pods</button>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <select class="filter-select"><option>All Status</option><option>Open</option><option>In Progress</option><option>Waiting on Customer</option></select>
+      <select class="filter-select"><option>All Priority</option><option>Critical Outage</option><option>Standard</option></select>
+      <select class="filter-select"><option>All Pods</option><option>Cloud Infra</option><option>Platform</option><option>Data</option><option>DevEx</option></select>
+      <select class="filter-select"><option>All Assignees</option><option>Me</option><option>Unassigned</option></select>
+      <input type="text" class="search-input" placeholder="Search cases…">
+    </div>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width:32px;"><input type="checkbox"></th>
+            <th>Case ID</th>
+            <th>Game Team</th>
+            <th>Summary</th>
+            <th>Service</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Assigned To</th>
+            <th>SLA</th>
+            <th>Created</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="clickable critical-row breach-row" onclick="navigate('s04')">
+            <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+            <td class="mono">CASE-0043</td>
+            <td><a class="link" onclick="event.stopPropagation();navigate('s05')">FarmVille 3</a></td>
+            <td style="max-width:180px;">Pod autoscaler failure — FV3 prod</td>
+            <td>Kubernetes</td>
+            <td><span class="badge badge-critical">⚡ Critical</span></td>
+            <td><span class="badge badge-inprogress">In Progress</span></td>
+            <td class="quick-assign-cell"><span class="assignee-val" onclick="event.stopPropagation();showAssignModal()">M. Patel</span></td>
+            <td>
+              <div class="sla-bar-wrap" style="min-width:90px;">
+                <div class="sla-bar-track"><div class="sla-bar-fill sla-fill-red" style="width:100%"></div></div>
+                <div class="sla-label breached">🔴 Breached</div>
+              </div>
+            </td>
+            <td class="text-sm text-secondary">Mar 8</td>
+          </tr>
+          <tr class="clickable critical-row" onclick="navigate('s04')">
+            <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+            <td class="mono">CASE-0044</td>
+            <td><a class="link" onclick="event.stopPropagation();navigate('s05')">Zynga Poker</a></td>
+            <td>Auth service down — prod environment</td>
+            <td>AWS Provisioning</td>
+            <td><span class="badge badge-critical">⚡ Critical</span></td>
+            <td><span class="badge badge-open">Open</span></td>
+            <td class="quick-assign-cell"><span class="assignee-val" onclick="event.stopPropagation();showAssignModal()">Unassigned</span></td>
+            <td>
+              <div class="sla-bar-wrap" style="min-width:90px;">
+                <div class="sla-bar-track"><div class="sla-bar-fill sla-fill-red" style="width:88%"></div></div>
+                <div class="sla-label breached">🔴 22h elapsed</div>
+              </div>
+            </td>
+            <td class="text-sm text-secondary">Mar 9</td>
+          </tr>
+          <tr class="clickable" onclick="navigate('s04')">
+            <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+            <td class="mono">CASE-0045</td>
+            <td><a class="link" onclick="event.stopPropagation();navigate('s05')">FarmVille 3</a></td>
+            <td>S3 bucket permissions for new env</td>
+            <td>AWS Provisioning</td>
+            <td><span class="badge badge-standard">Standard</span></td>
+            <td><span class="badge badge-inprogress">In Progress</span></td>
+            <td class="quick-assign-cell"><span class="assignee-val" onclick="event.stopPropagation();showAssignModal()">S. Chen</span></td>
+            <td>
+              <div class="sla-bar-wrap" style="min-width:90px;">
+                <div class="sla-bar-track"><div class="sla-bar-fill sla-fill-amber" style="width:82%"></div></div>
+                <div class="sla-label atrisk">⚠️ 3h left</div>
+              </div>
+            </td>
+            <td class="text-sm text-secondary">Mar 9</td>
+          </tr>
+          <tr class="clickable" onclick="navigate('s04')">
+            <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+            <td class="mono">CASE-0046</td>
+            <td><a class="link" onclick="event.stopPropagation();navigate('s05')">Words w/ Friends 2</a></td>
+            <td>Observability dashboard missing metrics</td>
+            <td>Observability</td>
+            <td><span class="badge badge-standard">Standard</span></td>
+            <td><span class="badge badge-open">Open</span></td>
+            <td class="quick-assign-cell"><span class="assignee-val" onclick="event.stopPropagation();showAssignModal()">Unassigned</span></td>
+            <td>
+              <div class="sla-bar-wrap" style="min-width:90px;">
+                <div class="sla-bar-track"><div class="sla-bar-fill sla-fill-green" style="width:28%"></div></div>
+                <div class="sla-label">✓ 3d 6h left</div>
+              </div>
+            </td>
+            <td class="text-sm text-secondary">Mar 9</td>
+          </tr>
+          <tr class="clickable" onclick="navigate('s04')">
+            <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+            <td class="mono">CASE-0047</td>
+            <td><a class="link" onclick="event.stopPropagation();navigate('s05')">Merge Dragons!</a></td>
+            <td>CI pipeline fails on main branch</td>
+            <td>Forge CI/CD</td>
+            <td><span class="badge badge-standard">Standard</span></td>
+            <td><span class="badge badge-waiting">Waiting on Customer</span></td>
+            <td class="quick-assign-cell"><span class="assignee-val">A. Rodriguez</span></td>
+            <td>
+              <div class="sla-bar-wrap" style="min-width:90px;">
+                <div class="sla-bar-track"><div class="sla-bar-fill sla-fill-gray" style="width:45%"></div></div>
+                <div class="sla-label">⏸ Paused · Day 2</div>
+              </div>
+            </td>
+            <td class="text-sm text-secondary">Mar 9</td>
+          </tr>
+          <tr class="clickable" onclick="navigate('s04')">
+            <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+            <td class="mono">CASE-0048</td>
+            <td><a class="link" onclick="event.stopPropagation();navigate('s05')">Words w/ Friends 2</a></td>
+            <td>Request additional Kubernetes namespace quota</td>
+            <td>Kubernetes</td>
+            <td><span class="badge badge-standard">Standard</span></td>
+            <td><span class="badge badge-open">Open</span></td>
+            <td class="quick-assign-cell"><span class="assignee-val" onclick="event.stopPropagation();showAssignModal()">Unassigned</span></td>
+            <td>
+              <div class="sla-bar-wrap" style="min-width:90px;">
+                <div class="sla-bar-track"><div class="sla-bar-fill sla-fill-green" style="width:10%"></div></div>
+                <div class="sla-label">✓ 4d 20h left</div>
+              </div>
+            </td>
+            <td class="text-sm text-secondary">Mar 10</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ S-04: CASE DETAIL ============ -->
+  <section class="screen" id="screen-s04">
+    <div class="flex-between mb-16">
+      <div class="flex-gap">
+        <button class="btn btn-ghost btn-sm" onclick="navigate('s03')">← Back to Queue</button>
+        <span class="mono" style="font-size:16px;font-weight:700;">CASE-0043</span>
+        <span class="badge badge-critical">⚡ Critical Outage</span>
+        <span class="badge badge-inprogress">In Progress</span>
+      </div>
+      <div class="sla-actions-bar">
+        <button class="btn btn-secondary btn-sm" onclick="showWaitingModal()">Set Waiting on Customer</button>
+        <button class="btn btn-secondary btn-sm" onclick="showReassignModal()">Reassign</button>
+        <button class="btn btn-primary btn-sm" onclick="showResolveModal()">✓ Resolve</button>
+      </div>
+    </div>
+
+    <!-- SLA BREACH BANNER for this case -->
+    <div style="background:var(--red-light);border:1px solid #FECACA;border-radius:8px;padding:10px 14px;margin-bottom:16px;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--red);">
+      🔴 <strong>SLA Breached.</strong> This Critical Outage case exceeded the 24-hour resolution window by 3h 22m.
+    </div>
+
+    <div class="grid-2">
+      <!-- LEFT COLUMN -->
+      <div>
+        <div class="card section-gap">
+          <div class="card-title">Case Details</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;">
+            <div><div class="text-sm text-secondary mb-4">Game Team</div><a class="link fw-600" onclick="navigate('s05')">FarmVille 3</a></div>
+            <div><div class="text-sm text-secondary mb-4">Studio</div><div>NaturalMotion</div></div>
+            <div><div class="text-sm text-secondary mb-4">Service</div><div>Kubernetes</div></div>
+            <div><div class="text-sm text-secondary mb-4">Routing Pod</div><div>Cloud Infrastructure</div></div>
+            <div><div class="text-sm text-secondary mb-4">Assigned Engineer</div><div>M. Patel</div></div>
+            <div><div class="text-sm text-secondary mb-4">Jira Ticket</div><a class="link mono">ZMGT-2847</a></div>
+            <div><div class="text-sm text-secondary mb-4">Created</div><div class="text-sm">Mar 8, 2026 · 09:14 AM</div></div>
+            <div><div class="text-sm text-secondary mb-4">Last Updated</div><div class="text-sm">Mar 10, 2026 · 11:32 AM</div></div>
+          </div>
+          <hr class="divider">
+          <div class="card-title" style="margin-bottom:8px;">SLA Status</div>
+          <div class="sla-bar-wrap" style="margin-bottom:6px;">
+            <div class="sla-bar-track" style="height:8px;"><div class="sla-bar-fill sla-fill-red" style="width:100%"></div></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;">
+            <span class="sla-label breached">🔴 Breached — exceeded by 3h 22m</span>
+            <span style="color:var(--text-secondary);">Target: 24h resolution</span>
+          </div>
+        </div>
+
+        <div class="card section-gap">
+          <div class="card-title">Description</div>
+          <p style="font-size:13px;line-height:1.6;color:var(--text-primary);">The Horizontal Pod Autoscaler for the fv3-prod cluster is failing to scale up. We're seeing increased latency across all game services with p99 latency now at 4.2s (normal baseline: 180ms). The autoscaler logs show "failed to compute desired replicas" errors. This is actively impacting approximately 340k concurrent players. Error trace attached.</p>
+        </div>
+
+        <div class="card section-gap">
+          <div class="card-title">Internal Notes</div>
+          <div style="margin-bottom:12px;">
+            <textarea class="form-textarea" rows="3" placeholder="Add an internal note (not visible to the game team)…" style="margin-bottom:8px;"></textarea>
+            <button class="btn btn-secondary btn-sm" onclick="showToast('Note posted','green')">Post Note</button>
+          </div>
+          <div class="note-item">
+            <div class="note-meta">M. Patel · Mar 10, 2026 · 10:45 AM</div>
+            <div class="note-text">Confirmed the HPA metrics server is failing to scrape the custom metrics endpoint. Working with FV3 team on the metrics-server certificate renewal. ETA 2 hours.</div>
+          </div>
+          <div class="note-item">
+            <div class="note-meta">M. Patel · Mar 8, 2026 · 09:52 AM</div>
+            <div class="note-text">Initial triage: HPA config looks correct. Investigating metrics-server connectivity. FV3 team is on a war room call, Slack: #fv3-incident-0308</div>
+          </div>
+        </div>
+
+        <div class="card section-gap">
+          <div class="card-title">Timeline</div>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-dot green"></div>
+              <div class="timeline-content">
+                <div class="timeline-event">Case resolved</div>
+                <div class="timeline-meta">Pending · Awaiting resolution</div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot amber"></div>
+              <div class="timeline-content">
+                <div class="timeline-event">SLA breached</div>
+                <div class="timeline-meta">Mar 9, 2026 · 09:14 AM</div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-content">
+                <div class="timeline-event">Status changed to In Progress</div>
+                <div class="timeline-meta">M. Patel · Mar 8, 2026 · 09:52 AM</div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot blue"></div>
+              <div class="timeline-content">
+                <div class="timeline-event">Assigned to M. Patel</div>
+                <div class="timeline-meta">System (auto-routing) · Mar 8, 2026 · 09:15 AM</div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot blue"></div>
+              <div class="timeline-content">
+                <div class="timeline-event">Case created · Jira ticket ZMGT-2847 created · #cloud-infra-support notified</div>
+                <div class="timeline-meta">Jordan Ellis · Mar 8, 2026 · 09:14 AM</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN — GAME TEAM SNAPSHOT -->
+      <div>
+        <div class="card" style="position:sticky;top:76px;">
+          <div class="flex-between" style="margin-bottom:12px;">
+            <div class="card-title" style="margin:0;">Game Team Snapshot</div>
+            <button class="btn btn-ghost btn-sm" onclick="navigate('s05')">View Full Profile →</button>
+          </div>
+          <div class="snapshot-panel">
+            <div class="snapshot-row"><span class="label">Team</span><span class="val fw-600">FarmVille 3</span></div>
+            <div class="snapshot-row"><span class="label">Studio</span><span class="val">NaturalMotion</span></div>
+            <div class="snapshot-row"><span class="label">Lifecycle</span><span class="val"><span class="badge badge-prod">Production</span></span></div>
+            <div class="snapshot-row"><span class="label">Active Cases</span><span class="val" style="color:var(--red);">3 open</span></div>
+            <div class="snapshot-row"><span class="label">Last Interaction</span><span class="val">Today</span></div>
+            <div class="snapshot-row"><span class="label">Slack Channel</span><span class="val mono" style="font-size:11px;">#fv3-zmgt-support</span></div>
+          </div>
+          <div style="margin:12px 0 8px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-secondary);">Top Contacts</div>
+          <div class="contact-item"><div><div class="fw-600" style="font-size:12px;">Jordan Ellis</div><div class="text-secondary text-sm">Lead Engineer · @j_ellis</div></div><span class="badge badge-open" style="font-size:10px;">4 cases</span></div>
+          <div class="contact-item"><div><div class="fw-600" style="font-size:12px;">Priya Mehta</div><div class="text-secondary text-sm">DevOps · @p_mehta</div></div><span class="badge badge-open" style="font-size:10px;">2 cases</span></div>
+          <div style="margin:12px 0 8px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-secondary);">Recent Cases</div>
+          <div style="font-size:12px;display:flex;flex-direction:column;gap:6px;">
+            <div class="flex-between"><span class="mono">CASE-0043</span><span class="badge badge-inprogress">In Progress</span></div>
+            <div class="flex-between"><span class="mono">CASE-0045</span><span class="badge badge-inprogress">In Progress</span></div>
+            <div class="flex-between"><span class="mono">CASE-0038</span><span class="badge badge-resolved">Resolved</span></div>
+          </div>
+          <div style="margin:12px 0 8px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-secondary);">Services Consumed</div>
+          <div class="chip-group"><span class="chip">Kubernetes</span><span class="chip">AWS Provisioning</span><span class="chip">Observability</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ S-05: TEAM PROFILE ============ -->
+  <section class="screen" id="screen-s05">
+    <div class="flex-between mb-16">
+      <div>
+        <div class="flex-gap" style="margin-bottom:4px;">
+          <button class="btn btn-ghost btn-sm" onclick="navigate('s06')">← All Profiles</button>
+        </div>
+        <h1 class="page-title" style="margin:0;">FarmVille 3 — Profile</h1>
+      </div>
+      <button class="btn btn-secondary btn-sm" id="editProfileBtn" onclick="toggleEditMode()">Edit Profile</button>
+    </div>
+
+    <!-- PROFILE HEADER CARD -->
+    <div class="card section-gap">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:start;">
+        <div>
+          <div class="text-sm text-secondary mb-4">Game Team</div>
+          <div style="font-size:18px;font-weight:700;">FarmVille 3</div>
+          <div class="text-secondary text-sm" style="margin-top:2px;">NaturalMotion Studios</div>
+        </div>
+        <div>
+          <div class="text-sm text-secondary mb-4">Lifecycle Stage</div>
+          <span class="badge badge-prod" style="font-size:13px;padding:4px 12px;">🟢 Production</span>
+        </div>
+        <div>
+          <div class="text-sm text-secondary mb-4">Primary Slack</div>
+          <span class="mono" style="font-size:12px;">#fv3-zmgt-support</span>
+          <button class="btn-icon" onclick="showToast('Copied to clipboard','blue')" style="margin-left:4px;">📋</button>
+        </div>
+        <div>
+          <div class="text-sm text-secondary mb-4">Services Consumed</div>
+          <div class="chip-group"><span class="chip">Kubernetes</span><span class="chip">AWS Provisioning</span><span class="chip">Observability</span><span class="chip">Forge CI/CD</span></div>
+        </div>
+        <div>
+          <div class="text-sm text-secondary mb-4">Active Cases</div>
+          <a class="link fw-600" onclick="navigate('s03')" style="font-size:16px;">3 open</a>
+        </div>
+        <div>
+          <div class="text-sm text-secondary mb-4">Last Interaction</div>
+          <div>Mar 10, 2026</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab(this,'tab-history')">Support History</div>
+      <div class="tab" onclick="switchTab(this,'tab-contacts')">Contacts</div>
+      <div class="tab" onclick="switchTab(this,'tab-notes')">Team Notes</div>
+    </div>
+
+    <!-- SUPPORT HISTORY TAB -->
+    <div class="tab-panel active" id="tab-history">
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Case ID</th>
+              <th>Summary</th>
+              <th>Service</th>
+              <th>Priority</th>
+              <th>Status</th>
+              <th>SLA Outcome</th>
+              <th>Created</th>
+              <th>Resolved</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="clickable critical-row" onclick="navigate('s04')">
+              <td class="mono">CASE-0043</td>
+              <td>Pod autoscaler failure — FV3 prod</td>
+              <td>Kubernetes</td>
+              <td><span class="badge badge-critical">⚡ Critical</span></td>
+              <td><span class="badge badge-inprogress">In Progress</span></td>
+              <td><span class="badge badge-critical">Breached</span></td>
+              <td class="text-sm text-secondary">Mar 8</td>
+              <td class="text-sm text-secondary">—</td>
+            </tr>
+            <tr class="clickable" onclick="navigate('s04')">
+              <td class="mono">CASE-0045</td>
+              <td>S3 bucket permissions for new env</td>
+              <td>AWS Provisioning</td>
+              <td><span class="badge badge-standard">Standard</span></td>
+              <td><span class="badge badge-inprogress">In Progress</span></td>
+              <td><span class="badge badge-waiting">At Risk</span></td>
+              <td class="text-sm text-secondary">Mar 9</td>
+              <td class="text-sm text-secondary">—</td>
+            </tr>
+            <tr class="clickable" onclick="navigate('s04')">
+              <td class="mono">CASE-0038</td>
+              <td>Onboarding checklist — new env setup</td>
+              <td>AWS Provisioning</td>
+              <td><span class="badge badge-standard">Standard</span></td>
+              <td><span class="badge badge-resolved">Resolved</span></td>
+              <td><span class="badge badge-resolved">Met</span></td>
+              <td class="text-sm text-secondary">Mar 1</td>
+              <td class="text-sm text-secondary">Mar 3</td>
+            </tr>
+            <tr class="clickable" onclick="navigate('s04')">
+              <td class="mono">CASE-0031</td>
+              <td>Kubernetes resource limits tuning</td>
+              <td>Kubernetes</td>
+              <td><span class="badge badge-standard">Standard</span></td>
+              <td><span class="badge badge-resolved">Resolved</span></td>
+              <td><span class="badge badge-resolved">Met</span></td>
+              <td class="text-sm text-secondary">Feb 22</td>
+              <td class="text-sm text-secondary">Feb 25</td>
+            </tr>
+            <tr class="clickable" onclick="navigate('s04')">
+              <td class="mono">CASE-0024</td>
+              <td>CI build times regressing — 45m+ builds</td>
+              <td>Forge CI/CD</td>
+              <td><span class="badge badge-standard">Standard</span></td>
+              <td><span class="badge badge-resolved">Resolved</span></td>
+              <td><span class="badge badge-critical">Breached</span></td>
+              <td class="text-sm text-secondary">Feb 10</td>
+              <td class="text-sm text-secondary">Feb 16</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CONTACTS TAB -->
+    <div class="tab-panel" id="tab-contacts">
+      <div class="flex-between mb-16">
+        <div></div>
+        <button class="btn btn-primary btn-sm" onclick="showToast('Add contact modal — prototype limitation','blue')">+ Add Contact</button>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table class="data-table">
+          <thead>
+            <tr><th>Name</th><th>Role / Specialty</th><th>Email</th><th>Slack Handle</th><th>Cases Submitted</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="fw-600">Jordan Ellis</td><td>Lead Engineer</td><td class="text-sm text-secondary">j.ellis@zynga.com</td><td class="mono text-sm">@j_ellis</td><td><a class="link">6</a></td></tr>
+            <tr><td class="fw-600">Priya Mehta</td><td>DevOps Engineer</td><td class="text-sm text-secondary">p.mehta@zynga.com</td><td class="mono text-sm">@p_mehta</td><td><a class="link">3</a></td></tr>
+            <tr><td class="fw-600">Daniel Kim</td><td>Engineering Manager</td><td class="text-sm text-secondary">d.kim@zynga.com</td><td class="mono text-sm">@d_kim</td><td><a class="link">1</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TEAM NOTES TAB -->
+    <div class="tab-panel" id="tab-notes">
+      <div class="card">
+        <div style="margin-bottom:16px;">
+          <textarea class="form-textarea" rows="3" placeholder="Add a team-level note (visible to all ZMGT engineers)…" style="margin-bottom:8px;"></textarea>
+          <button class="btn btn-secondary btn-sm" onclick="showToast('Team note posted','green')">Post Note</button>
+        </div>
+        <div class="note-item">
+          <div class="note-meta">S. Chen · Mar 9, 2026</div>
+          <div class="note-text">FV3 team is ramping a new DevOps hire (start date April). Expect heavier questions on K8s and observability setup in Q2. Worth proactive outreach once they're onboarded.</div>
+        </div>
+        <div class="note-item">
+          <div class="note-meta">M. Patel · Feb 25, 2026</div>
+          <div class="note-text">Recurring pattern: K8s resource limits questions stem from FV3 team not yet using the self-service limit calculator in the portal. Onboarded Jordan on this during CASE-0031 resolution. Should be less frequent now.</div>
+        </div>
+        <div class="note-item">
+          <div class="note-meta">A. Rodriguez · Jan 15, 2026</div>
+          <div class="note-text">Team went live Dec 2025. Good team, quick communicators. Primary contact Jordan Ellis is technically strong — usually comes with a good repro. Preferred Slack over email.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ S-06: PROFILE LIST ============ -->
+  <section class="screen" id="screen-s06">
+    <div class="flex-between mb-16">
+      <h1 class="page-title" style="margin:0;">Game Team Profiles</h1>
+      <button class="btn btn-primary btn-sm" onclick="showToast('Add Profile modal — prototype limitation','blue')">+ Add Game Team Profile</button>
+    </div>
+    <div class="filter-bar">
+      <input type="text" class="search-input" placeholder="Search teams…">
+      <select class="filter-select"><option>All Lifecycle Stages</option><option>Prototype</option><option>Pre-Production</option><option>Production</option></select>
+      <select class="filter-select"><option>All Studios</option><option>NaturalMotion</option><option>Zynga Austin</option><option>Zynga Baltimore</option></select>
+      <select class="filter-select"><option>All Services</option><option>Kubernetes</option><option>AWS Provisioning</option><option>Forge CI/CD</option></select>
+    </div>
+    <div class="profile-grid">
+      <div class="profile-card" onclick="navigate('s05')">
+        <div class="flex-between" style="margin-bottom:4px;">
+          <div class="profile-card-name">FarmVille 3</div>
+          <span class="badge badge-prod">Production</span>
+        </div>
+        <div class="profile-card-studio">NaturalMotion</div>
+        <div class="chip-group"><span class="chip">Kubernetes</span><span class="chip">AWS</span><span class="chip">Observability</span><span class="chip" style="background:#F3F4F6;color:var(--text-secondary);">+1</span></div>
+        <div class="profile-card-meta"><span>3 active cases</span><span>Last: Today</span></div>
+      </div>
+      <div class="profile-card" onclick="navigate('s05')">
+        <div class="flex-between" style="margin-bottom:4px;">
+          <div class="profile-card-name">Zynga Poker</div>
+          <span class="badge badge-prod">Production</span>
+        </div>
+        <div class="profile-card-studio">Zynga Austin</div>
+        <div class="chip-group"><span class="chip">AWS Provisioning</span><span class="chip">Database</span></div>
+        <div class="profile-card-meta"><span style="color:var(--red);">1 active case</span><span>Last: Mar 9</span></div>
+      </div>
+      <div class="profile-card" onclick="navigate('s05')">
+        <div class="flex-between" style="margin-bottom:4px;">
+          <div class="profile-card-name">Words with Friends 2</div>
+          <span class="badge badge-prod">Production</span>
+        </div>
+        <div class="profile-card-studio">Zynga Baltimore</div>
+        <div class="chip-group"><span class="chip">Kubernetes</span><span class="chip">Observability</span></div>
+        <div class="profile-card-meta"><span>2 active cases</span><span>Last: Mar 9</span></div>
+      </div>
+      <div class="profile-card" onclick="navigate('s05')">
+        <div class="flex-between" style="margin-bottom:4px;">
+          <div class="profile-card-name">Merge Dragons!</div>
+          <span class="badge badge-preprod">Pre-Production</span>
+        </div>
+        <div class="profile-card-studio">NaturalMotion</div>
+        <div class="chip-group"><span class="chip">Forge CI/CD</span><span class="chip">AWS</span></div>
+        <div class="profile-card-meta"><span>1 active case</span><span>Last: Mar 9</span></div>
+      </div>
+      <div class="profile-card" onclick="navigate('s05')">
+        <div class="flex-between" style="margin-bottom:4px;">
+          <div class="profile-card-name">Harry Potter Puzzles</div>
+          <span class="badge badge-preprod">Pre-Production</span>
+        </div>
+        <div class="profile-card-studio">Zynga Austin</div>
+        <div class="chip-group"><span class="chip">AWS Provisioning</span><span class="chip">Forge CI/CD</span></div>
+        <div class="profile-card-meta"><span>0 active cases</span><span>Last: Feb 28</span></div>
+      </div>
+      <div class="profile-card" onclick="navigate('s05')">
+        <div class="flex-between" style="margin-bottom:4px;">
+          <div class="profile-card-name">Project Nova</div>
+          <span class="badge badge-proto">Prototype</span>
+        </div>
+        <div class="profile-card-studio">NaturalMotion</div>
+        <div class="chip-group"><span class="chip">AWS Provisioning</span></div>
+        <div class="profile-card-meta"><span>0 active cases</span><span>Last: Mar 2</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ S-07: EXEC DASHBOARD ============ -->
+  <section class="screen" id="screen-s07">
+    <div class="flex-between mb-16">
+      <h1 class="page-title" style="margin:0;">Support Operations Dashboard</h1>
+      <div class="flex-gap">
+        <select class="filter-select"><option>Last 30 Days</option><option>Last 7 Days</option><option>Last Quarter</option><option>Custom</option></select>
+      </div>
+    </div>
+
+    <!-- KPI ROW -->
+    <div class="grid-4 section-gap">
+      <div class="kpi-card" style="cursor:pointer;" onclick="navigate('s03')">
+        <div class="kpi-label">Open Cases</div>
+        <div class="kpi-value">14</div>
+        <div class="kpi-delta neg">↑ +3 vs prior period</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">SLA Compliance Rate</div>
+        <div class="kpi-value">82%</div>
+        <div class="kpi-delta pos">↑ +4pp vs prior period</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Avg Resolution Time</div>
+        <div class="kpi-value">1.8d</div>
+        <div class="kpi-delta pos">↓ 0.3d vs prior period</div>
+      </div>
+      <div class="kpi-card" style="cursor:pointer;" onclick="navigate('s03')">
+        <div class="kpi-label">SLA Breaches</div>
+        <div class="kpi-value" style="color:var(--red);">3</div>
+        <div class="kpi-delta neg">↑ +1 vs prior period</div>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px;">
+      <!-- Volume by Pod -->
+      <div class="card">
+        <div class="card-title">Volume by Pod</div>
+        <div class="bar-chart">
+          <div class="bar-row"><div class="bar-label">Cloud Infra</div><div class="bar-track"><div class="bar-fill" style="width:72%;background:#2563EB;">18</div></div><div class="bar-count">18</div></div>
+          <div class="bar-row"><div class="bar-label">Platform</div><div class="bar-track"><div class="bar-fill" style="width:52%;background:#7C3AED;">13</div></div><div class="bar-count">13</div></div>
+          <div class="bar-row"><div class="bar-label">Data Services</div><div class="bar-track"><div class="bar-fill" style="width:32%;background:#D97706;">8</div></div><div class="bar-count">8</div></div>
+          <div class="bar-row"><div class="bar-label">DevEx</div><div class="bar-track"><div class="bar-fill" style="width:20%;background:#16A34A;">5</div></div><div class="bar-count">5</div></div>
+          <div class="bar-row"><div class="bar-label">Security</div><div class="bar-track"><div class="bar-fill" style="width:8%;background:#6B7280;">2</div></div><div class="bar-count">2</div></div>
+        </div>
+      </div>
+
+      <!-- Volume by Service -->
+      <div class="card">
+        <div class="card-title">Volume by Service</div>
+        <div class="bar-chart">
+          <div class="bar-row"><div class="bar-label">Kubernetes</div><div class="bar-track"><div class="bar-fill" style="width:68%;background:#2563EB;">17</div></div><div class="bar-count">17</div></div>
+          <div class="bar-row"><div class="bar-label">AWS Provision.</div><div class="bar-track"><div class="bar-fill" style="width:56%;background:#7C3AED;">14</div></div><div class="bar-count">14</div></div>
+          <div class="bar-row"><div class="bar-label">Forge CI/CD</div><div class="bar-track"><div class="bar-fill" style="width:36%;background:#D97706;">9</div></div><div class="bar-count">9</div></div>
+          <div class="bar-row"><div class="bar-label">Database</div><div class="bar-track"><div class="bar-fill" style="width:20%;background:#16A34A;">5</div></div><div class="bar-count">5</div></div>
+          <div class="bar-row"><div class="bar-label">Observability</div><div class="bar-track"><div class="bar-fill" style="width:16%;background:#6B7280;">4</div></div><div class="bar-count">4</div></div>
+        </div>
+      </div>
+
+      <!-- SLA Donut -->
+      <div class="card">
+        <div class="card-title">SLA Health</div>
+        <div class="donut-wrap" style="justify-content:center;margin-top:8px;">
+          <div style="position:relative;width:120px;height:120px;">
+            <svg width="120" height="120" viewBox="0 0 120 120" class="donut-svg">
+              <!-- Breached: 12% -->
+              <circle cx="60" cy="60" r="44" fill="none" stroke="#E3001B" stroke-width="18" stroke-dasharray="33.2 244" stroke-dashoffset="0"/>
+              <!-- At Risk: 6% -->
+              <circle cx="60" cy="60" r="44" fill="none" stroke="#D97706" stroke-width="18" stroke-dasharray="16.6 244" stroke-dashoffset="-33.2"/>
+              <!-- Met: 82% -->
+              <circle cx="60" cy="60" r="44" fill="none" stroke="#16A34A" stroke-width="18" stroke-dasharray="200 244" stroke-dashoffset="-49.8"/>
+            </svg>
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+              <div style="font-size:20px;font-weight:700;">82%</div>
+              <div style="font-size:10px;color:var(--text-secondary);">Compliant</div>
+            </div>
+          </div>
+          <div class="donut-legend">
+            <div class="donut-legend-item"><div class="donut-dot" style="background:var(--green);"></div><span>Met (38)</span></div>
+            <div class="donut-legend-item"><div class="donut-dot" style="background:var(--amber);"></div><span>At Risk (3)</span></div>
+            <div class="donut-legend-item"><div class="donut-dot" style="background:var(--red);"></div><span>Breached (3)</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABLES ROW -->
+    <div style="display:grid;grid-template-columns:3fr 2fr;gap:16px;">
+      <!-- Recurring Issues -->
+      <div class="card">
+        <div class="card-title">Top Teams by Volume</div>
+        <table class="data-table">
+          <thead>
+            <tr><th>Game Team</th><th>Studio</th><th>Cases</th><th>Services</th><th>SLA %</th><th>Last Interaction</th></tr>
+          </thead>
+          <tbody>
+            <tr class="clickable" onclick="navigate('s05')">
+              <td class="fw-600">FarmVille 3</td>
+              <td class="text-secondary text-sm">NaturalMotion</td>
+              <td><span style="font-weight:600;color:var(--red);">12</span></td>
+              <td><div class="chip-group"><span class="chip" style="font-size:10px;">K8s</span><span class="chip" style="font-size:10px;">AWS</span></div></td>
+              <td><span style="color:var(--amber);font-weight:600;">75%</span></td>
+              <td class="text-sm text-secondary">Today</td>
+            </tr>
+            <tr class="clickable" onclick="navigate('s05')">
+              <td class="fw-600">Words w/ Friends 2</td>
+              <td class="text-secondary text-sm">Zynga Baltimore</td>
+              <td><span style="font-weight:600;">9</span></td>
+              <td><div class="chip-group"><span class="chip" style="font-size:10px;">K8s</span><span class="chip" style="font-size:10px;">Obs</span></div></td>
+              <td><span style="color:var(--green);font-weight:600;">89%</span></td>
+              <td class="text-sm text-secondary">Mar 9</td>
+            </tr>
+            <tr class="clickable" onclick="navigate('s05')">
+              <td class="fw-600">Zynga Poker</td>
+              <td class="text-secondary text-sm">Zynga Austin</td>
+              <td><span style="font-weight:600;">7</span></td>
+              <td><div class="chip-group"><span class="chip" style="font-size:10px;">AWS</span><span class="chip" style="font-size:10px;">DB</span></div></td>
+              <td><span style="color:var(--red);font-weight:600;">71%</span></td>
+              <td class="text-sm text-secondary">Mar 9</td>
+            </tr>
+            <tr class="clickable" onclick="navigate('s05')">
+              <td class="fw-600">Merge Dragons!</td>
+              <td class="text-secondary text-sm">NaturalMotion</td>
+              <td><span style="font-weight:600;">4</span></td>
+              <td><div class="chip-group"><span class="chip" style="font-size:10px;">CI/CD</span></div></td>
+              <td><span style="color:var(--green);font-weight:600;">100%</span></td>
+              <td class="text-sm text-secondary">Mar 9</td>
+            </tr>
+            <tr class="clickable" onclick="navigate('s05')">
+              <td class="fw-600">Harry Potter Puzzles</td>
+              <td class="text-secondary text-sm">Zynga Austin</td>
+              <td><span style="font-weight:600;">3</span></td>
+              <td><div class="chip-group"><span class="chip" style="font-size:10px;">AWS</span><span class="chip" style="font-size:10px;">CI/CD</span></div></td>
+              <td><span style="color:var(--green);font-weight:600;">100%</span></td>
+              <td class="text-sm text-secondary">Feb 28</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Studio Onboarding Status -->
+      <div class="card">
+        <div class="card-title">Onboarding Pipeline</div>
+        <table class="data-table">
+          <thead>
+            <tr><th>Game Team</th><th>Stage</th><th>Cases</th><th>Avg RT</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="fw-600">Merge Dragons!</td>
+              <td><span class="badge badge-preprod">Pre-Prod</span></td>
+              <td>4</td>
+              <td>1.2d</td>
+            </tr>
+            <tr>
+              <td class="fw-600">Harry Potter Puzzles</td>
+              <td><span class="badge badge-preprod">Pre-Prod</span></td>
+              <td>3</td>
+              <td>0.8d</td>
+            </tr>
+            <tr>
+              <td class="fw-600">Project Nova</td>
+              <td><span class="badge badge-proto">Prototype</span></td>
+              <td>1</td>
+              <td>2.1d</td>
+            </tr>
+            <tr>
+              <td class="fw-600">Wildfire Racing</td>
+              <td><span class="badge badge-proto">Prototype</span></td>
+              <td>0</td>
+              <td>—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ S-08: ROUTING RULES ============ -->
+  <section class="screen" id="screen-s08">
+    <div class="flex-between mb-16">
+      <h1 class="page-title" style="margin:0;">Routing Configuration</h1>
+      <button class="btn btn-primary btn-sm" onclick="showToast('Add Rule modal — prototype limitation','blue')">+ Add Routing Rule</button>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table class="data-table">
+        <thead>
+          <tr><th>Service Category</th><th>Target Pod</th><th>Jira Project</th><th>Slack Channel</th><th>Status</th><th>Last Modified</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="fw-600">Kubernetes</td>
+            <td>Cloud Infrastructure</td>
+            <td class="mono">ZMGT-INFRA</td>
+            <td class="mono text-sm">#cloud-infra-support</td>
+            <td><span class="badge badge-active">Active</span></td>
+            <td class="text-sm text-secondary">Mar 1, 2026</td>
+            <td><button class="btn btn-ghost btn-sm" onclick="showToast('Edit modal — prototype limitation','blue')">Edit</button></td>
+          </tr>
+          <tr>
+            <td class="fw-600">AWS Provisioning</td>
+            <td>Cloud Infrastructure</td>
+            <td class="mono">ZMGT-INFRA</td>
+            <td class="mono text-sm">#cloud-infra-support</td>
+            <td><span class="badge badge-active">Active</span></td>
+            <td class="text-sm text-secondary">Mar 1, 2026</td>
+            <td><button class="btn btn-ghost btn-sm" onclick="showToast('Edit modal — prototype limitation','blue')">Edit</button></td>
+          </tr>
+          <tr>
+            <td class="fw-600">Forge CI/CD</td>
+            <td>Developer Experience</td>
+            <td class="mono">ZMGT-DEVEX</td>
+            <td class="mono text-sm">#devex-support</td>
+            <td><span class="badge badge-active">Active</span></td>
+            <td class="text-sm text-secondary">Feb 14, 2026</td>
+            <td><button class="btn btn-ghost btn-sm" onclick="showToast('Edit modal — prototype limitation','blue')">Edit</button></td>
+          </tr>
+          <tr>
+            <td class="fw-600">Database Services</td>
+            <td>Data Platform</td>
+            <td class="mono">ZMGT-DATA</td>
+            <td class="mono text-sm">#data-platform-support</td>
+            <td><span class="badge badge-active">Active</span></td>
+            <td class="text-sm text-secondary">Feb 14, 2026</td>
+            <td><button class="btn btn-ghost btn-sm" onclick="showToast('Edit modal — prototype limitation','blue')">Edit</button></td>
+          </tr>
+          <tr>
+            <td class="fw-600">Observability</td>
+            <td>Platform Engineering</td>
+            <td class="mono">ZMGT-PLAT</td>
+            <td class="mono text-sm">#platform-support</td>
+            <td><span class="badge badge-active">Active</span></td>
+            <td class="text-sm text-secondary">Feb 14, 2026</td>
+            <td><button class="btn btn-ghost btn-sm" onclick="showToast('Edit modal — prototype limitation','blue')">Edit</button></td>
+          </tr>
+          <tr style="opacity:0.6;">
+            <td class="fw-600">GameAnalytics (Legacy)</td>
+            <td>Data Platform</td>
+            <td class="mono">ZMGT-DATA</td>
+            <td class="mono text-sm">#data-platform-support</td>
+            <td><span class="badge badge-disabled">Disabled</span></td>
+            <td class="text-sm text-secondary">Jan 20, 2026</td>
+            <td><button class="btn btn-ghost btn-sm" onclick="showToast('Rule enabled','green')">Enable</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ S-09: AUDIT LOG ============ -->
+  <section class="screen" id="screen-s09">
+    <div class="flex-between mb-16">
+      <h1 class="page-title" style="margin:0;">Audit Log</h1>
+      <button class="btn btn-ghost btn-sm" onclick="showToast('CSV export triggered','green')">⬇ Export CSV</button>
+    </div>
+    <div class="filter-bar">
+      <select class="filter-select"><option>All Actors</option><option>M. Patel</option><option>S. Chen</option><option>System</option></select>
+      <select class="filter-select"><option>All Action Types</option><option>Case Created</option><option>Status Changed</option><option>Case Resolved</option><option>Rule Changed</option></select>
+      <select class="filter-select"><option>All Record Types</option><option>Case</option><option>Profile</option><option>Routing Rule</option></select>
+      <select class="filter-select"><option>Last 7 Days</option><option>Last 30 Days</option><option>Custom</option></select>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table class="data-table">
+        <thead>
+          <tr><th>Timestamp</th><th>Actor</th><th>Action</th><th>Record Type</th><th>Record ID</th><th>Details</th></tr>
+        </thead>
+        <tbody>
+          <tr class="clickable audit-row" onclick="this.classList.toggle('expanded')">
+            <td class="mono text-sm">2026-03-10 11:32</td>
+            <td>M. Patel <span class="text-secondary text-sm">(ZMGT Eng)</span></td>
+            <td>Note Added</td>
+            <td>Case</td>
+            <td class="mono">CASE-0043</td>
+            <td class="text-secondary text-sm">Internal note posted</td>
+          </tr>
+          <tr class="clickable audit-row" onclick="this.classList.toggle('expanded')">
+            <td class="mono text-sm">2026-03-10 09:22</td>
+            <td>System</td>
+            <td>SLA Breached</td>
+            <td>Case</td>
+            <td class="mono">CASE-0043</td>
+            <td class="text-secondary text-sm">Critical Outage 24h window exceeded</td>
+          </tr>
+          <tr class="clickable audit-row" onclick="this.classList.toggle('expanded')">
+            <td class="mono text-sm">2026-03-10 08:44</td>
+            <td>J. Ellis <span class="text-secondary text-sm">(Game Team)</span></td>
+            <td>Case Created</td>
+            <td>Case</td>
+            <td class="mono">CASE-0049</td>
+            <td class="text-secondary text-sm">Standard · AWS Provisioning</td>
+          </tr>
+          <tr class="clickable audit-row" onclick="this.classList.toggle('expanded')">
+            <td class="mono text-sm">2026-03-09 16:11</td>
+            <td>A. Rodriguez <span class="text-secondary text-sm">(ZMGT Eng)</span></td>
+            <td>Status Changed</td>
+            <td>Case</td>
+            <td class="mono">CASE-0047</td>
+            <td class="text-secondary text-sm">In Progress → Waiting on Customer</td>
+          </tr>
+          <tr class="clickable audit-row" onclick="this.classList.toggle('expanded')">
+            <td class="mono text-sm">2026-03-09 14:02</td>
+            <td>J. Ellis <span class="text-secondary text-sm">(Game Team)</span></td>
+            <td>Case Created</td>
+            <td>Case</td>
+            <td class="mono">CASE-0048</td>
+            <td class="text-secondary text-sm">Standard · Kubernetes</td>
+          </tr>
+          <tr class="clickable audit-row" onclick="this.classList.toggle('expanded')">
+            <td class="mono text-sm">2026-03-08 09:14</td>
+            <td>J. Ellis <span class="text-secondary text-sm">(Game Team)</span></td>
+            <td>Case Created</td>
+            <td>Case</td>
+            <td class="mono">CASE-0043</td>
+            <td class="text-secondary text-sm">Critical Outage · Kubernetes</td>
+          </tr>
+          <tr class="clickable audit-row" onclick="this.classList.toggle('expanded')">
+            <td class="mono text-sm">2026-03-08 09:15</td>
+            <td>System</td>
+            <td>Case Assigned</td>
+            <td>Case</td>
+            <td class="mono">CASE-0043</td>
+            <td class="text-secondary text-sm">Auto-routed to Cloud Infrastructure → M. Patel</td>
+          </tr>
+          <tr class="clickable audit-row" onclick="this.classList.toggle('expanded')">
+            <td class="mono text-sm">2026-03-01 11:00</td>
+            <td>Admin <span class="text-secondary text-sm">(Admin)</span></td>
+            <td>Routing Rule Changed</td>
+            <td>Routing Rule</td>
+            <td class="mono">RULE-K8S-01</td>
+            <td class="text-secondary text-sm">Kubernetes → Cloud Infrastructure pod</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ CASE DETAIL DRAWER (S-02a) ============ -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="caseDrawer">
+  <div class="drawer-header">
+    <div class="drawer-header-left">
+      <span class="mono" style="font-size:15px;font-weight:700;">CASE-0043</span>
+      <span class="badge badge-critical">⚡ Critical</span>
+      <span class="badge badge-inprogress">In Progress</span>
+    </div>
+    <button class="btn-icon" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-body">
+    <div class="drawer-section">
+      <div class="drawer-section-title">Summary</div>
+      <div style="font-size:13px;font-weight:500;">Pod autoscaler failure — FV3 prod</div>
+    </div>
+    <div class="drawer-section">
+      <div class="drawer-section-title">Service & Routing</div>
+      <div style="font-size:13px;"><span class="text-secondary">Service:</span> Kubernetes</div>
+      <div style="font-size:13px;"><span class="text-secondary">Routed to:</span> Cloud Infrastructure Pod</div>
+    </div>
+    <div class="drawer-section">
+      <div class="drawer-section-title">SLA Status</div>
+      <div class="sla-bar-wrap">
+        <div class="sla-bar-track" style="height:6px;"><div class="sla-bar-fill sla-fill-red" style="width:100%"></div></div>
+        <div class="sla-label breached">🔴 SLA Breached — exceeded by 3h 22m</div>
+      </div>
+    </div>
+    <div class="drawer-section">
+      <div class="drawer-section-title">Description</div>
+      <p style="font-size:13px;line-height:1.6;color:var(--text-primary);">The Horizontal Pod Autoscaler for the fv3-prod cluster is failing to scale up. Seeing increased latency across all game services — p99 now at 4.2s. Approximately 340k concurrent players impacted.</p>
+    </div>
+    <div class="drawer-section">
+      <div class="drawer-section-title">Linked Jira Ticket</div>
+      <a class="link mono">ZMGT-2847</a> <span class="text-secondary text-sm">· In Progress · Updated Mar 10</span>
+    </div>
+    <div class="drawer-section">
+      <div class="drawer-section-title">Timeline</div>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot amber"></div>
+          <div class="timeline-content">
+            <div class="timeline-event">SLA breached</div>
+            <div class="timeline-meta">Mar 9, 2026 · 09:14 AM</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <div class="timeline-event">Status → In Progress</div>
+            <div class="timeline-meta">ZMGT Engineer · Mar 8, 09:52 AM</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot blue"></div>
+          <div class="timeline-content">
+            <div class="timeline-event">Case created · Routed to Cloud Infrastructure</div>
+            <div class="timeline-meta">Jordan Ellis · Mar 8, 09:14 AM</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODALS ============ -->
+
+<!-- Resolve Modal -->
+<div class="modal-overlay" id="resolveModal">
+  <div class="modal">
+    <div class="modal-title">Resolve Case CASE-0043</div>
+    <div class="modal-sub">Confirm the linked Jira ticket has been closed before resolving.</div>
+    <div class="callout callout-blue" style="font-size:12px;margin-bottom:16px;">Linked Jira ticket: <strong class="mono">ZMGT-2847</strong> — currently <strong>In Progress</strong>. Ensure this is closed in Jira.</div>
+    <div class="form-group">
+      <label class="form-label">Resolution notes (optional)</label>
+      <textarea class="form-textarea" rows="3" placeholder="Summary of what was done and root cause…"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('resolveModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="resolveCase()">Confirm Resolution</button>
+    </div>
+  </div>
+</div>
+
+<!-- Waiting Modal -->
+<div class="modal-overlay" id="waitingModal">
+  <div class="modal">
+    <div class="modal-title">Set Waiting on Customer</div>
+    <div class="modal-sub">This will pause the SLA timer.</div>
+    <div class="callout callout-amber" style="font-size:12px;">The SLA timer will pause immediately. The customer will receive reminder emails on Day 3 and Day 6. The case will auto-close at Day 20 with no response.</div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('waitingModal')">Cancel</button>
+      <button class="btn btn-secondary" onclick="setWaiting()">Confirm — Pause SLA</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reassign Modal -->
+<div class="modal-overlay" id="reassignModal">
+  <div class="modal">
+    <div class="modal-title">Reassign Case</div>
+    <div class="modal-sub">Select a pod and engineer to reassign this case to.</div>
+    <div class="form-group">
+      <label class="form-label">Pod</label>
+      <select class="form-select"><option>Cloud Infrastructure</option><option>Platform Engineering</option><option>Developer Experience</option><option>Data Platform</option></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Assigned Engineer</label>
+      <select class="form-select"><option>M. Patel (current)</option><option>S. Chen</option><option>A. Rodriguez</option><option>K. Williams</option><option>Unassigned</option></select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('reassignModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="reassignCase()">Reassign</button>
+    </div>
+  </div>
+</div>
+
+<!-- Assign Modal (quick-assign from queue) -->
+<div class="modal-overlay" id="assignModal">
+  <div class="modal" style="width:320px;">
+    <div class="modal-title">Quick Assign</div>
+    <div class="form-group">
+      <select class="form-select">
+        <option>Unassigned</option>
+        <option>M. Patel</option>
+        <option>S. Chen</option>
+        <option>A. Rodriguez</option>
+        <option>K. Williams</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('assignModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="closeModal('assignModal');showToast('Engineer assigned','green')">Assign</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+  // ============ STATE ============
+  let currentRole = 'game-team';
+  let currentScreen = 's01';
+
+  // ============ ROLE SWITCHING ============
+  function setRole(role) {
+    currentRole = role;
+    document.querySelectorAll('.role-btn').forEach((b,i) => {
+      b.classList.remove('active');
+      if (['game-team','zmgt','leadership','admin'][i] === role) b.classList.add('active');
+    });
+
+    // Update nav panels
+    ['game-team','zmgt','leadership','admin'].forEach(r => {
+      const el = document.getElementById('nav-'+r);
+      if (el) el.style.display = r === role ? '' : 'none';
+    });
+
+    // Update avatar
+    const avatars = { 'game-team':'JE', 'zmgt':'MP', 'leadership':'DL', 'admin':'AD' };
+    document.getElementById('userAvatar').textContent = avatars[role];
+
+    // Game selector only for game-team
+    document.getElementById('gameSelectorWrap').style.display = role === 'game-team' ? '' : 'none';
+
+    // Default screens per role
+    const defaults = { 'game-team':'s01', 'zmgt':'s03', 'leadership':'s07', 'admin':'s08' };
+    navigate(defaults[role]);
+
+    // Alert banner only for zmgt/leadership/admin
+    document.getElementById('alertBanner').classList.toggle('hidden', role === 'game-team');
+  }
+
+  // ============ NAVIGATION ============
+  function navigate(screen) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const el = document.getElementById('screen-'+screen);
+    if (el) { el.classList.add('active'); currentScreen = screen; }
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    closeDrawer();
+    window.scrollTo(0, 0);
+  }
+
+  // ============ DRAWER ============
+  function openDrawer() {
+    document.getElementById('drawerOverlay').classList.add('open');
+    document.getElementById('caseDrawer').classList.add('open');
+  }
+  function closeDrawer() {
+    document.getElementById('drawerOverlay').classList.remove('open');
+    document.getElementById('caseDrawer').classList.remove('open');
+  }
+
+  // ============ MODALS ============
+  function showResolveModal() { document.getElementById('resolveModal').classList.add('open'); }
+  function showWaitingModal() { document.getElementById('waitingModal').classList.add('open'); }
+  function showReassignModal() { document.getElementById('reassignModal').classList.add('open'); }
+  function showAssignModal() { document.getElementById('assignModal').classList.add('open'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+  function resolveCase() {
+    closeModal('resolveModal');
+    showToast('Case CASE-0043 resolved successfully','green');
+    setTimeout(() => navigate('s03'), 800);
+  }
+  function setWaiting() {
+    closeModal('waitingModal');
+    showToast('SLA timer paused. Customer notified.','blue');
+  }
+  function reassignCase() {
+    closeModal('reassignModal');
+    showToast('Case reassigned','green');
+  }
+
+  // ============ TOAST ============
+  function showToast(msg, type='green') {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `<span>${msg}</span><button class="toast-close" onclick="this.parentElement.remove()">✕</button>`;
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 4500);
+  }
+
+  // ============ FORM HELPERS ============
+  function updateRouting() {
+    const service = document.getElementById('serviceSelect').value;
+    const podMap = { aws:'Cloud Infrastructure', k8s:'Cloud Infrastructure', ci:'Developer Experience', db:'Data Platform', obs:'Platform Engineering' };
+    const preview = document.getElementById('routePreview');
+    if (service) {
+      preview.style.display = '';
+      document.getElementById('routePodName').textContent = podMap[service];
+    } else {
+      preview.style.display = 'none';
+    }
+  }
+
+  function setPriority(el, priority) {
+    document.querySelectorAll('.radio-option').forEach(r => r.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('criticalCallout').style.display = priority === 'critical' ? '' : 'none';
+  }
+
+  function updateCharCount(el, countId, max) {
+    const counter = document.getElementById(countId);
+    if (!counter) return;
+    const len = el.value.length;
+    counter.textContent = len.toLocaleString();
+    counter.style.color = len >= max ? 'var(--red)' : len >= max * 0.8 ? 'var(--amber)' : 'var(--text-tertiary)';
+  }
+
+  function submitRequest() {
+    showToast('Submitting…', 'blue');
+    setTimeout(() => { navigate('s01b'); }, 1000);
+  }
+
+  // ============ TABS ============
+  function switchTab(tabEl, panelId) {
+    const tabs = tabEl.parentElement;
+    tabs.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tabEl.classList.add('active');
+    const panelParent = tabEl.closest('section');
+    panelParent.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(panelId).classList.add('active');
+  }
+
+  // ============ EDIT PROFILE MODE ============
+  function toggleEditMode() {
+    const btn = document.getElementById('editProfileBtn');
+    if (btn.textContent === 'Edit Profile') {
+      btn.textContent = 'Save Changes';
+      btn.classList.remove('btn-secondary');
+      btn.classList.add('btn-primary');
+    } else {
+      btn.textContent = 'Edit Profile';
+      btn.classList.remove('btn-primary');
+      btn.classList.add('btn-secondary');
+      showToast('Profile saved','green');
+    }
+  }
+
+  // ============ CLOSE MODALS ON OVERLAY CLICK ============
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function(e) {
+      if (e.target === this) this.classList.remove('open');
+    });
+  });
+
+  // ============ INIT ============
+  setRole('game-team');
+</script>
+</body>
+</html>
